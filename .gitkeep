@@ -1,0 +1,5 @@
+touch frontend/.gitkeep
+touch ai-liveness-engine/.gitkeep
+touch crypto-fhe-service/.gitkeep
+touch smart-contracts/.gitkeep
+touch docs/.gitkeep

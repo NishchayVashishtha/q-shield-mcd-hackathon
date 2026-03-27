@@ -1,6 +1,5 @@
 import * as faceapi from 'face-api.js';
 
-
 // ==========================================
 // STEP 1: LOAD AI MODELS INTO BROWSER MEMORY
 // ==========================================

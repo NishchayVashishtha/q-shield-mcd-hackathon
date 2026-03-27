@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import FaceScanner from './components/FaceScanner';
 import VoteForm from './components/VoteForm';
-
+import { loadAIModels, extractIDDescriptor, verifyLivenessAndMatch } from "./gatekeeper.js";
 // --- NAYA CODE: Algorand Imports ---
 import { AlgorandClient } from '@algorandfoundation/algokit-utils';
-import appSpec from './QShieldVoting.arc56.json'; // Ensure ye file same folder me ho
+import appSpec from "./QShieldVoting.arc56.json";
 // -----------------------------------
 
 function App() {
@@ -17,7 +17,7 @@ function App() {
   const testVaultConnection = async () => {
     try {
       setVaultStatus("🟡 Connecting...");
-      
+
       const algorand = AlgorandClient.defaultLocalNet();
       const appClient = algorand.client.getAppClient({
         appSpec: JSON.stringify(appSpec),
@@ -26,7 +26,7 @@ function App() {
 
       const globalState = await appClient.getGlobalState();
       console.log("Tijori ke andar ka data:", globalState);
-      
+
       setVaultStatus("🟢 Connected to Vault 1008!");
     } catch (error) {
       console.error(error);
@@ -37,17 +37,17 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center p-4 font-sans">
-      
+
       {/* Header Section */}
       <header className="mb-8 text-center">
         <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 tracking-tight">
           Q-Shield
         </h1>
         <p className="text-gray-400 mt-2 text-lg">Quantum-Resistant & Privacy-First E-Voting</p>
-        
+
         {/* --- NAYA CODE: Test Connection Button --- */}
         <div className="mt-4">
-          <button 
+          <button
             onClick={testVaultConnection}
             className="bg-gray-800 hover:bg-gray-700 text-cyan-400 border border-cyan-500/30 px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-lg"
           >
@@ -69,7 +69,7 @@ function App() {
               <span>🟢</span> Identity Verified!
             </h2>
             <p className="text-gray-300 text-lg mb-6">
-              AI Gatekeeper has confirmed your liveness and identity. 
+              AI Gatekeeper has confirmed your liveness and identity.
               You are now entering the secure voting arena.
             </p>
             <div className="animate-pulse flex space-x-4 justify-center mb-8">
@@ -77,13 +77,13 @@ function App() {
               <div className="h-3 w-3 bg-cyan-400 rounded-full"></div>
               <div className="h-3 w-3 bg-cyan-400 rounded-full"></div>
             </div>
-            
+
             {/* Existing VoteForm - Unchanged */}
-            <VoteForm 
-              onVoteSuccess={(candidate, score) => console.log(`Vote registered for ${candidate} with score ${score}`)} 
+            <VoteForm
+              onVoteSuccess={(candidate, score) => console.log(`Vote registered for ${candidate} with score ${score}`)}
               onBotDetected={() => setIsVerified(false)}
             />
-            
+
           </div>
         )}
       </main>

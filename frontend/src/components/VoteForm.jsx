@@ -1,7 +1,7 @@
  import React, { useState, useEffect, useRef } from 'react';
 // Priyanshu ka watchdog AI import kar rahe hain
 import { calculateTrustScore } from 'ai-engine';
-
+import axios from 'axios';
 export default function VoteForm({ onVoteSuccess , onBotDetected }) {
   const [selectedCandidate, setSelectedCandidate] = useState('');
   const [status, setStatus] = useState('');
@@ -43,7 +43,6 @@ export default function VoteForm({ onVoteSuccess , onBotDetected }) {
     setIsCasting(true);
     setStatus("Analyzing behavior... 🔍");
 
-    // 1. Session data collect karo
     const sessionData = {
       startTime: startTime.current,
       endTime: Date.now(),
@@ -51,22 +50,35 @@ export default function VoteForm({ onVoteSuccess , onBotDetected }) {
       pasteAttempts: pasteAttempts.current
     };
 
-    // 2. Priyanshu ke AI se check karwao
     const trustResult = calculateTrustScore(sessionData);
 
-    // Thoda dramatic delay hackathon presentation ke liye ;)
-    setTimeout(() => {
+    setTimeout(async () => {
       if (trustResult.isHuman) {
-        setStatus(`✅ Vote Securely Cast! (Trust Score: ${trustResult.score.toFixed(0)}%)`);
-        setTimeout(() => onVoteSuccess(selectedCandidate, trustResult.score), 2000);
-      } else {
-        setStatus(`🚨 BOT DETECTED! Transaction Blocked. Reason: ${trustResult.reason}`);
-        setIsCasting(false);
+        // --- TERA ASLI KAAM YAHAN SE START HOTA HAI ---
+        setStatus("🔐 AI Verified! Encrypting Vote with FHE...");
         
-        // 🔴 NAYA LOGIC: 3 second baad user ko bahar phek do!
-        setTimeout(() => {
-            if (onBotDetected) onBotDetected();
-        }, 3000);
+        try {
+          // Backend Laptop ka IP (e.g. 192.168.1.50) ya localhost agar same laptop hai
+          const BACKEND_URL = "http://127.0.0.1:5001/cast-vote"; 
+          
+          const response = await axios.post(BACKEND_URL, {
+            candidate_id: selectedCandidate === 'Alpha' ? 1 : 2
+          });
+
+          if (response.data.status === "success") {
+            setStatus(`✅ Success! Encrypted & Pushed (ID: ${response.data.app_id})`);
+            setTimeout(() => onVoteSuccess(selectedCandidate, trustResult.score), 2000);
+          }
+        } catch (err) {
+          console.error(err);
+          setStatus("❌ Encryption Bridge Failed!");
+          setIsCasting(false);
+        }
+        // --- TERA KAAM KHATAM ---
+      } else {
+        setStatus(`🚨 BOT DETECTED! Reason: ${trustResult.reason}`);
+        setIsCasting(false);
+        setTimeout(() => { if (onBotDetected) onBotDetected(); }, 3000);
       }
     }, 1500);
   };

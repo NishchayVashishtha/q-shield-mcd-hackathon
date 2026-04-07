@@ -71,7 +71,7 @@ export async function verifyLivenessAndMatch(videoElement, idDescriptor) {
 
                     // Agar distance 0.6 se kam hai, toh exact match hai
                     if (distance < 0.6) {
-                        resolve({ success: true, message: "Identity Verified! 🟢", distance: distance });
+                        resolve({ success: true, message: "Identity Verified! 🟢", distance: distance, descriptor: liveDescriptor });
                     } else {
                         resolve({ success: false, message: "Face does not match the ID Card. 🔴", distance: distance });
                     }

@@ -10,6 +10,7 @@ import appSpec from "./QShieldVoting.arc56.json";
 function App() {
   // Ye state track karegi ki user verify hua ya nahi
   const [isVerified, setIsVerified] = useState(false);
+  const [faceDescriptor, setFaceDescriptor] = useState(null);
 
   // --- NAYA CODE: Vault Connection State & Function ---
   const [vaultStatus, setVaultStatus] = useState("");
@@ -61,7 +62,7 @@ function App() {
       <main className="w-full max-w-4xl">
         {!isVerified ? (
           // Jab tak verify nahi hota, scanner dikhao
-          <FaceScanner onVerificationSuccess={() => setIsVerified(true)} />
+          <FaceScanner onVerificationSuccess={(desc) => { setFaceDescriptor(desc); setIsVerified(true); }} />
         ) : (
           // Verify hone ke baad ye screen aayegi (Jahan hum baad mein VoteForm lagayenge)
           <div className="bg-gray-900 p-10 rounded-xl shadow-2xl text-center border border-green-500/30 w-full max-w-2xl mx-auto">
@@ -80,6 +81,7 @@ function App() {
 
             {/* Existing VoteForm - Unchanged */}
             <VoteForm
+              faceHash={faceDescriptor}
               onVoteSuccess={(candidate, score) => console.log(`Vote registered for ${candidate} with score ${score}`)}
               onBotDetected={() => setIsVerified(false)}
             />

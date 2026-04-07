@@ -71,7 +71,7 @@ export async function verifyLivenessAndMatch(videoElement, idDescriptor) {
 
                     // Agar distance 0.6 se kam hai, toh exact match hai
                     if (distance < 0.6) {
-                        resolve({ success: true, message: "Identity Verified! 🟢", distance: distance });
+                        resolve({ success: true, message: "Identity Verified! 🟢", distance: distance, descriptor: liveDescriptor });
                     } else {
                         resolve({ success: false, message: "Face does not match the ID Card. 🔴", distance: distance });
                     }
@@ -88,4 +88,22 @@ export async function verifyLivenessAndMatch(videoElement, idDescriptor) {
             reject(new Error("Liveness check timed out. Please look at the camera and smile."));
         }, 15000);
     });
+}
+
+// ==========================================
+// STEP 4: HASH FACE DESCRIPTOR FOR PRIVACY
+// ==========================================
+/**
+ * Converts a Float32Array face descriptor into a SHA-256 hex string.
+ * Rounds aggressively to 1 significant digit so minor scan variations
+ * still produce the same hash for the same face.
+ */
+export async function hashFaceDescriptor(descriptor) {
+    // Round to nearest 0.1 — coarse enough to be stable across scans
+    const rounded = Array.from(descriptor).map(v => Math.round(v * 5) / 5);
+    const str = JSON.stringify(rounded);
+    const buffer = new TextEncoder().encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }

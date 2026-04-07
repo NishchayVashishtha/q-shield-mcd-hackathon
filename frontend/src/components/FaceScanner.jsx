@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 // Priyanshu ke module se functions import kar rahe hain
 import { loadAIModels, extractIDDescriptor, verifyLivenessAndMatch } from 'ai-engine';
+import { hashFaceDescriptor } from '../gatekeeper';
 
 export default function FaceScanner({ onVerificationSuccess }) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -63,10 +64,36 @@ export default function FaceScanner({ onVerificationSuccess }) {
 
       if (result.success) {
         setStatus(`✅ ${result.message} (Score: ${result.distance.toFixed(2)})`);
-        // Stop camera
         videoRef.current.srcObject.getTracks().forEach(track => track.stop());
-        // Agle step par bhejo (Voting Form)
-        setTimeout(() => onVerificationSuccess(), 2000); 
+
+        // Convert Float32Array to plain array to send to backend
+        const descriptor = Array.from(result.descriptor);
+        console.log("🔍 Descriptor generated, length:", descriptor.length);
+
+        // Check with backend if this face has already voted
+        try {
+          console.log("📡 Calling /check-face...");
+          const checkRes = await fetch('http://127.0.0.1:5001/check-face', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ descriptor })
+          });
+          const checkData = await checkRes.json();
+          console.log("📡 /check-face response:", checkData);
+
+          if (checkData.status === 'already_voted') {
+            setStatus("🚫 This face has already cast a vote. Duplicate access denied.");
+            return;
+          }
+
+          // Only proceed if backend confirmed ok
+          setTimeout(() => onVerificationSuccess(descriptor), 2000);
+
+        } catch (e) {
+          console.error("❌ Backend unreachable:", e.message);
+          setStatus("❌ Cannot connect to backend server. Please ensure it is running on port 5001.");
+          // Do NOT proceed — block the user if backend is down
+        }
       } else {
         setStatus(`❌ ${result.message}`);
       }

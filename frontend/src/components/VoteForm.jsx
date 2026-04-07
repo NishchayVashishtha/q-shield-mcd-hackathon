@@ -2,7 +2,7 @@
 // Priyanshu ka watchdog AI import kar rahe hain
 import { calculateTrustScore } from 'ai-engine';
 import axios from 'axios';
-export default function VoteForm({ onVoteSuccess , onBotDetected }) {
+export default function VoteForm({ onVoteSuccess , onBotDetected, faceHash }) {
   const [selectedCandidate, setSelectedCandidate] = useState('');
   const [status, setStatus] = useState('');
   const [isCasting, setIsCasting] = useState(false);
@@ -58,11 +58,20 @@ export default function VoteForm({ onVoteSuccess , onBotDetected }) {
         setStatus("🔐 AI Verified! Encrypting Vote with FHE...");
         
         try {
-          // Backend Laptop ka IP (e.g. 192.168.1.50) ya localhost agar same laptop hai
-          const BACKEND_URL = "http://127.0.0.1:5001/cast-vote"; 
-          
-          const response = await axios.post(BACKEND_URL, {
-            candidate_id: selectedCandidate === 'Alpha' ? 1 : 2
+          const BACKEND_URL = "http://127.0.0.1:5001";
+
+          // First: check if this face has already voted
+          const checkRes = await axios.post(`${BACKEND_URL}/check-face`, { descriptor: faceHash });
+          if (checkRes.data.status === 'already_voted') {
+            setStatus("🚫 You have already cast your vote. Duplicate vote rejected.");
+            setIsCasting(false);
+            return;
+          }
+
+          // Then: submit the vote with the descriptor
+          const response = await axios.post(`${BACKEND_URL}/cast-vote`, {
+            candidate_id: selectedCandidate === 'Alpha' ? 1 : 2,
+            descriptor: faceHash
           });
 
           if (response.data.status === "success") {
@@ -71,7 +80,11 @@ export default function VoteForm({ onVoteSuccess , onBotDetected }) {
           }
         } catch (err) {
           console.error(err);
-          setStatus("❌ Encryption Bridge Failed!");
+          if (err.response?.data?.status === 'already_voted') {
+            setStatus("🚫 You have already cast your vote. Duplicate vote rejected.");
+          } else {
+            setStatus("❌ Encryption Bridge Failed!");
+          }
           setIsCasting(false);
         }
         // --- TERA KAAM KHATAM ---

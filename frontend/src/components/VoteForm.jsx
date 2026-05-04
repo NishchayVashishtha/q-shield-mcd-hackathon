@@ -2,9 +2,10 @@
 // Priyanshu ka watchdog AI import kar rahe hain
 import { calculateTrustScore } from 'ai-engine';
 import axios from 'axios';
-export default function VoteForm({ onVoteSuccess , onBotDetected, faceHash }) {
+export default function VoteForm({ onVoteSuccess , onBotDetected, faceHash, credentialId }) {
   const [selectedCandidate, setSelectedCandidate] = useState('');
   const [status, setStatus] = useState('');
+  const [txId, setTxId] = useState('');
   const [isCasting, setIsCasting] = useState(false);
 
   // Background trackers (Ref use kar rahe hain taaki re-renders par reset na ho)
@@ -71,12 +72,13 @@ export default function VoteForm({ onVoteSuccess , onBotDetected, faceHash }) {
           // Then: submit the vote with the descriptor
           const response = await axios.post(`${BACKEND_URL}/cast-vote`, {
             candidate_id: selectedCandidate === 'Alpha' ? 1 : 2,
-            descriptor: faceHash
+            descriptor: faceHash,
+            credential_id: credentialId
           });
 
           if (response.data.status === "success") {
-            setStatus(`✅ Success! Encrypted & Pushed (ID: ${response.data.app_id})`);
-            setTimeout(() => onVoteSuccess(selectedCandidate, trustResult.score), 2000);
+            setStatus(`✅ Your vote has been securely submitted!`);
+            setTimeout(() => onVoteSuccess(selectedCandidate, trustResult.score), 3000);
           }
         } catch (err) {
           console.error(err);

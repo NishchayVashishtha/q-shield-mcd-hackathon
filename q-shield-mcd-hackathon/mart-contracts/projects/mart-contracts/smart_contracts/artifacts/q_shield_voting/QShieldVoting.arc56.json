@@ -1,0 +1,173 @@
+{
+    "name": "QShieldVoting",
+    "structs": {},
+    "methods": [
+        {
+            "name": "start_election",
+            "args": [],
+            "returns": {
+                "type": "void"
+            },
+            "actions": {
+                "create": [],
+                "call": [
+                    "NoOp"
+                ]
+            },
+            "readonly": false,
+            "desc": "Admin election start karega",
+            "events": [],
+            "recommendations": {}
+        },
+        {
+            "name": "stop_election",
+            "args": [],
+            "returns": {
+                "type": "void"
+            },
+            "actions": {
+                "create": [],
+                "call": [
+                    "NoOp"
+                ]
+            },
+            "readonly": false,
+            "desc": "Admin election stop karega",
+            "events": [],
+            "recommendations": {}
+        },
+        {
+            "name": "cast_vote",
+            "args": [
+                {
+                    "type": "string",
+                    "name": "fhe_encrypted_payload"
+                },
+                {
+                    "type": "uint64",
+                    "name": "candidate_id"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            },
+            "actions": {
+                "create": [],
+                "call": [
+                    "NoOp"
+                ]
+            },
+            "readonly": false,
+            "desc": "User apna FHE encrypted vote daalega — candidate_id: 1=Alpha, 2=Beta",
+            "events": [],
+            "recommendations": {}
+        },
+        {
+            "name": "get_results",
+            "args": [],
+            "returns": {
+                "type": "(uint64,uint64)"
+            },
+            "actions": {
+                "create": [],
+                "call": [
+                    "NoOp"
+                ]
+            },
+            "readonly": true,
+            "desc": "Current vote counts return karo — (alpha_count, beta_count)",
+            "events": [],
+            "recommendations": {}
+        }
+    ],
+    "arcs": [22, 28],
+    "networks": {},
+    "state": {
+        "schema": {
+            "global": {
+                "ints": 3,
+                "bytes": 1
+            },
+            "local": {
+                "ints": 0,
+                "bytes": 0
+            }
+        },
+        "keys": {
+            "global": {
+                "admin": {
+                    "keyType": "AVMString",
+                    "valueType": "address",
+                    "key": "YWRtaW4="
+                },
+                "is_voting_active": {
+                    "keyType": "AVMString",
+                    "valueType": "AVMUint64",
+                    "key": "aXNfdm90aW5nX2FjdGl2ZQ=="
+                },
+                "votes_alpha": {
+                    "keyType": "AVMString",
+                    "valueType": "AVMUint64",
+                    "key": "dm90ZXNfYWxwaGE="
+                },
+                "votes_beta": {
+                    "keyType": "AVMString",
+                    "valueType": "AVMUint64",
+                    "key": "dm90ZXNfYmV0YQ=="
+                }
+            },
+            "local": {},
+            "box": {}
+        },
+        "maps": {
+            "global": {},
+            "local": {},
+            "box": {
+                "encrypted_votes": {
+                    "keyType": "address",
+                    "valueType": "AVMString",
+                    "prefix": "ZW5jcnlwdGVkX3ZvdGVz"
+                },
+                "has_voted": {
+                    "keyType": "address",
+                    "valueType": "uint64",
+                    "prefix": "aGFzX3ZvdGVk"
+                }
+            }
+        }
+    },
+    "bareActions": {
+        "create": [
+            "NoOp"
+        ],
+        "call": []
+    },
+    "sourceInfo": {
+        "approval": {
+            "sourceInfo": [],
+            "pcOffsetMethod": "none"
+        },
+        "clear": {
+            "sourceInfo": [],
+            "pcOffsetMethod": "none"
+        }
+    },
+    "source": {
+        "approval": "I3ByYWdtYSB2ZXJzaW9uIDExCiNwcmFnbWEgdHlwZXRyYWNrIGZhbHNlCgovLyBhbGdvcHkuYXJjNC5BUkM0Q29udHJhY3QuYXBwcm92YWxfcHJvZ3JhbSgpIC0+IHVpbnQ2NDoKbWFpbjoKICAgIGludGNibG9jayAwIDEKICAgIGJ5dGVjYmxvY2sgImlzX3ZvdGluZ19hY3RpdmUiICJ2b3Rlc19hbHBoYSIgInZvdGVzX2JldGEiICJhZG1pbiIKICAgIHR4biBBcHBsaWNhdGlvbklECiAgICBibnogbWFpbl9hZnRlcl9pZl9lbHNlQDIKICAgIGJ5dGVjXzMgLy8gImFkbWluIgogICAgZ2xvYmFsIENyZWF0b3JBZGRyZXNzCiAgICBhcHBfZ2xvYmFsX3B1dAogICAgYnl0ZWNfMCAvLyAiaXNfdm90aW5nX2FjdGl2ZSIKICAgIGludGNfMCAvLyAwCiAgICBhcHBfZ2xvYmFsX3B1dAogICAgYnl0ZWNfMSAvLyAidm90ZXNfYWxwaGEiCiAgICBpbnRjXzAgLy8gMAogICAgYXBwX2dsb2JhbF9wdXQKICAgIGJ5dGVjXzIgLy8gInZvdGVzX2JldGEiCiAgICBpbnRjXzAgLy8gMAogICAgYXBwX2dsb2JhbF9wdXQKbWFpbl9hZnRlcl9pZl9lbHNlQDI6CiAgICB0eG4gTnVtQXBwQXJncwogICAgYnogbWFpbl9fX2FsZ29weV9kZWZhdWx0X2NyZWF0ZUAxMwogICAgdHhuIE9uQ29tcGxldGlvbgogICAgIQogICAgYXNzZXJ0CiAgICB0eG4gQXBwbGljYXRpb25JRAogICAgYXNzZXJ0CiAgICBwdXNoYnl0ZXNzIDB4ZTFiYWJkNjIgMHhlNjFmMzU1MSAweDYwODU1MjRmIDB4YTQzNjBiYzAgLy8gbWV0aG9kcwogICAgdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMAogICAgbWF0Y2ggc3RhcnRfZWxlY3Rpb24gc3RvcF9lbGVjdGlvbiBjYXN0X3ZvdGUgZ2V0X3Jlc3VsdHMKICAgIGVycgptYWluX19fYWxnb3B5X2RlZmF1bHRfY3JlYXRlQDEzOgogICAgdHhuIE9uQ29tcGxldGlvbgogICAgIQogICAgdHhuIEFwcGxpY2F0aW9uSUQKICAgICEKICAgICYmCiAgICByZXR1cm4K",
+        "clear": "I3ByYWdtYSB2ZXJzaW9uIDExCiNwcmFnbWEgdHlwZXRyYWNrIGZhbHNlCgovLyBhbGdvcHkuYXJjNC5BUkM0Q29udHJhY3QuY2xlYXJfc3RhdGVfcHJvZ3JhbSgpIC0+IHVpbnQ2NDoKbWFpbjoKICAgIHB1c2hpbnQgMQogICAgcmV0dXJuCg=="
+    },
+    "byteCode": {
+        "approval": "CyACAAEmBBBpc192b3RpbmdfYWN0aXZlC3ZvdGVzX2FscGhhCnZvdGVzX2JldGEFYWRtaW4xGEAADSsyCWcoImcpImcqImcxG0EAKzEZFEQxGESCBAThur1iBOYfNVEEYIVSTwSkNgvANhoAjgQACQAWACMAmQAxGRQxGBQQQzEAIitlRBJEKCNnI0MxACIrZUQSRCgiZyNDNhoBSSJZgQIISwEVEkRXAgA2GgJJFYEIEkQXIihlRCMSRDEAgAloYXNfdm90ZWRLAVBJvkwXIkxPAk0URIAPZW5jcnlwdGVkX3ZvdGVzTwJQSbxITwO/Ixa/IxJBAAsiKWVEIwgpTGcjQyIqZUQjCCpMZ0L/8iIpZUQWIiplRBZQgAQVH3x1TFCwI0M=",
+        "clear": "C4EBQw=="
+    },
+    "compilerInfo": {
+        "compiler": "puya",
+        "compilerVersion": {
+            "major": 5,
+            "minor": 8,
+            "patch": 1
+        }
+    },
+    "events": [],
+    "templateVariables": {}
+}

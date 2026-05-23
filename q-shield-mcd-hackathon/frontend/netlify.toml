@@ -1,6 +1,5 @@
 [build]
-  command = "npm run build"
-  publish = "dist"
+  command = "cd ../ai-engine && npm install && cd ../frontend && npm run build"git 
 
 [[redirects]]
   from = "/*"
@@ -9,3 +8,5 @@
 
 [build.environment]
   NODE_VERSION = "20"
+
+
